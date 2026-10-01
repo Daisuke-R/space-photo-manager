@@ -3,10 +3,919 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>空きスペース管理</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Noto Sans JP", sans-serif;
+      background: #f5f6f8;
+      color: #333;
+    }
+
+    header {
+      background: #1f2937;
+      color: white;
+      padding: 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    nav {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    nav button {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      background: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    nav button.active {
+      background: #e5e7eb;
+      font-weight: bold;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button.primary {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: none;
+      border-radius: 7px;
+      background: #2563eb;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.primary:disabled {
+      background: #9ca3af;
+    }
+
+    .space-item {
+      cursor: pointer;
+    }
+
+    .space-item:hover {
+      background: #f9fafb;
+    }
+
+    .space-item h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .space-photo {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      background: #eee;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .detail-row {
+      margin: 8px 0;
+    }
+
+    .detail-label {
+      font-weight: bold;
+    }
+
+    #qrArea {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #qrcode {
+      display: inline-block;
+      padding: 10px;
+      background: white;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 12px;
+      background: #eef2ff;
+    }
+
+    .back-button {
+      margin-bottom: 15px;
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
 </head>
+
 <body>
+
+<header>
   <h1>空きスペース管理</h1>
-  <p>GitHub Pagesのテストページです。</p>
+</header>
+
+<nav>
+  <button id="tabRegister" class="active" onclick="showRegister()">登録</button>
+  <button id="tabList" onclick="showList()">一覧</button>
+</nav>
+
+<main>
+
+  <!-- 登録画面 -->
+  <section id="registerScreen">
+
+    <div class="card">
+      <h2>空きスペース登録</h2>
+
+      <label>写真</label>
+      <input
+        type="file"
+        id="photo"
+        accept="image/*"
+        capture="environment"
+      >
+
+      <label>工場名</label>
+      <input
+        type="text"
+        id="factoryName"
+        placeholder="例：福崎工場"
+      >
+
+      <label>場所名</label>
+      <input
+        type="text"
+        id="locationName"
+        placeholder="例：7号棟 1階"
+      >
+
+      <label>面積（㎡）</label>
+      <input
+        type="number"
+        id="area"
+        step="0.01"
+        placeholder="例：120"
+      >
+
+      <label>用途</label>
+      <input
+        type="text"
+        id="purpose"
+        placeholder="例：倉庫"
+      >
+
+      <label>状況</label>
+      <select id="status">
+        <option value="">選択してください</option>
+        <option value="空き">空き</option>
+        <option value="使用予定">使用予定</option>
+        <option value="使用中">使用中</option>
+        <option value="その他">その他</option>
+      </select>
+
+      <button
+        class="primary"
+        id="saveButton"
+        onclick="saveSpace()"
+      >
+        保存
+      </button>
+
+      <div id="saveMessage"></div>
+    </div>
+
+    <div class="card hidden" id="qrCard">
+
+      <h2>QRコード</h2>
+
+      <p>
+        このQRコードをA4用紙などに印刷して、
+        対象スペースに掲示してください。
+      </p>
+
+      <div id="qrArea">
+        <div id="qrcode"></div>
+
+        <br>
+
+        <button
+          class="primary"
+          onclick="downloadQR()"
+        >
+          QR画像を保存
+        </button>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- 一覧画面 -->
+  <section id="listScreen" class="hidden">
+
+    <div class="card">
+
+      <h2>空きスペース一覧</h2>
+
+      <div id="spaceList">
+        読み込み中...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- 詳細画面 -->
+  <section id="detailScreen" class="hidden">
+
+    <button class="back-button" onclick="showList()">
+      ← 一覧に戻る
+    </button>
+
+    <div class="card">
+
+      <h2 id="detailTitle">詳細</h2>
+
+      <img
+        id="detailPhoto"
+        class="space-photo"
+        alt="スペース写真"
+      >
+
+      <div class="detail-row">
+        <span class="detail-label">工場名：</span>
+        <span id="detailFactory"></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-label">場所名：</span>
+        <span id="detailLocation"></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-label">面積：</span>
+        <span id="detailArea"></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-label">用途：</span>
+        <span id="detailPurpose"></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="detail-label">状況：</span>
+        <span id="detailStatus"></span>
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<script>
+
+  // ==============================
+  // Supabase設定
+  // ==============================
+
+  const SUPABASE_URL =
+    "https://phjcpmyuccpiaumcxixv.supabase.co";
+
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_Zrx8JKbBmc0im7KRcDqI6g_QinYgaS7";
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+
+  // ==============================
+  // 画面切り替え
+  // ==============================
+
+  function hideAllScreens() {
+
+    document
+      .getElementById("registerScreen")
+      .classList.add("hidden");
+
+    document
+      .getElementById("listScreen")
+      .classList.add("hidden");
+
+    document
+      .getElementById("detailScreen")
+      .classList.add("hidden");
+
+    document
+      .getElementById("tabRegister")
+      .classList.remove("active");
+
+    document
+      .getElementById("tabList")
+      .classList.remove("active");
+  }
+
+
+  function showRegister() {
+
+    hideAllScreens();
+
+    document
+      .getElementById("registerScreen")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("tabRegister")
+      .classList.add("active");
+  }
+
+
+  async function showList() {
+
+    hideAllScreens();
+
+    document
+      .getElementById("listScreen")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("tabList")
+      .classList.add("active");
+
+    await loadSpaces();
+  }
+
+
+  // ==============================
+  // 写真URL取得
+  // ==============================
+
+  function getPhotoUrl(path) {
+
+    const result =
+      supabaseClient
+        .storage
+        .from("space-photos")
+        .getPublicUrl(path);
+
+    return result.data.publicUrl;
+  }
+
+
+  // ==============================
+  // スペース保存
+  // ==============================
+
+  async function saveSpace() {
+
+    const button =
+      document.getElementById("saveButton");
+
+    const message =
+      document.getElementById("saveMessage");
+
+    const photoFile =
+      document.getElementById("photo").files[0];
+
+    const factoryName =
+      document.getElementById("factoryName").value.trim();
+
+    const locationName =
+      document.getElementById("locationName").value.trim();
+
+    const area =
+      document.getElementById("area").value;
+
+    const purpose =
+      document.getElementById("purpose").value.trim();
+
+    const status =
+      document.getElementById("status").value;
+
+
+    if (!photoFile) {
+
+      alert("写真を選択してください。");
+      return;
+
+    }
+
+
+    if (!factoryName || !locationName) {
+
+      alert("工場名と場所名を入力してください。");
+      return;
+
+    }
+
+
+    button.disabled = true;
+    button.textContent = "保存中...";
+
+    message.innerHTML = "";
+
+
+    try {
+
+      // ------------------------------
+      // 写真ファイル名作成
+      // ------------------------------
+
+      const fileExtension =
+        photoFile.name.split(".").pop();
+
+      const fileName =
+        crypto.randomUUID() +
+        "." +
+        fileExtension;
+
+
+      // ------------------------------
+      // Supabase Storageへアップロード
+      // ------------------------------
+
+      const uploadResult =
+        await supabaseClient
+          .storage
+          .from("space-photos")
+          .upload(
+            fileName,
+            photoFile,
+            {
+              cacheControl: "3600",
+              upsert: false
+            }
+          );
+
+
+      if (uploadResult.error) {
+
+        throw uploadResult.error;
+
+      }
+
+
+      // ------------------------------
+      // DBへ登録
+      // ------------------------------
+
+      const insertResult =
+        await supabaseClient
+          .from("spaces")
+          .insert({
+
+            factory_name: factoryName,
+
+            location_name: locationName,
+
+            area:
+              area
+                ? Number(area)
+                : null,
+
+            purpose: purpose,
+
+            status: status,
+
+            photo_path: fileName
+
+          })
+          .select()
+          .single();
+
+
+      if (insertResult.error) {
+
+        throw insertResult.error;
+
+      }
+
+
+      const space =
+        insertResult.data;
+
+
+      // ------------------------------
+      // QRコード作成
+      // ------------------------------
+
+      const baseUrl =
+        window.location.origin +
+        window.location.pathname;
+
+      const qrUrl =
+        baseUrl +
+        "?id=" +
+        space.id;
+
+
+      document
+        .getElementById("qrcode")
+        .innerHTML = "";
+
+
+      new QRCode(
+        document.getElementById("qrcode"),
+        {
+          text: qrUrl,
+          width: 220,
+          height: 220
+        }
+      );
+
+
+      document
+        .getElementById("qrCard")
+        .classList.remove("hidden");
+
+
+      message.innerHTML =
+        '<div class="message">保存しました。</div>';
+
+
+      // ------------------------------
+      // フォーム初期化
+      // ------------------------------
+
+      document
+        .getElementById("photo")
+        .value = "";
+
+      document
+        .getElementById("factoryName")
+        .value = "";
+
+      document
+        .getElementById("locationName")
+        .value = "";
+
+      document
+        .getElementById("area")
+        .value = "";
+
+      document
+        .getElementById("purpose")
+        .value = "";
+
+      document
+        .getElementById("status")
+        .value = "";
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      message.innerHTML =
+        '<div class="message">保存に失敗しました。<br>' +
+        error.message +
+        '</div>';
+
+    }
+
+
+    button.disabled = false;
+    button.textContent = "保存";
+
+  }
+
+
+  // ==============================
+  // 一覧取得
+  // ==============================
+
+  async function loadSpaces() {
+
+    const list =
+      document.getElementById("spaceList");
+
+    list.innerHTML =
+      "読み込み中...";
+
+
+    const result =
+      await supabaseClient
+        .from("spaces")
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (result.error) {
+
+      list.innerHTML =
+        "読み込みに失敗しました。<br>" +
+        result.error.message;
+
+      return;
+
+    }
+
+
+    if (!result.data.length) {
+
+      list.innerHTML =
+        "登録されているスペースはありません。";
+
+      return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    result.data.forEach(
+      function(space) {
+
+        const item =
+          document.createElement("div");
+
+        item.className =
+          "card space-item";
+
+
+        item.innerHTML = `
+
+          <h3>
+            ${escapeHtml(space.factory_name)}
+            ／
+            ${escapeHtml(space.location_name)}
+          </h3>
+
+          <div>
+            面積：
+            ${space.area ?? ""}
+            ㎡
+          </div>
+
+          <div>
+            用途：
+            ${escapeHtml(space.purpose ?? "")}
+          </div>
+
+          <div>
+            状況：
+            ${escapeHtml(space.status ?? "")}
+          </div>
+
+        `;
+
+
+        item.onclick =
+          function() {
+
+            showDetail(space);
+
+          };
+
+
+        list.appendChild(item);
+
+      }
+    );
+
+  }
+
+
+  // ==============================
+  // 詳細表示
+  // ==============================
+
+  function showDetail(space) {
+
+    hideAllScreens();
+
+
+    document
+      .getElementById("detailScreen")
+      .classList.remove("hidden");
+
+
+    document
+      .getElementById("detailTitle")
+      .textContent =
+        space.factory_name +
+        " ／ " +
+        space.location_name;
+
+
+    document
+      .getElementById("detailFactory")
+      .textContent =
+        space.factory_name || "";
+
+
+    document
+      .getElementById("detailLocation")
+      .textContent =
+        space.location_name || "";
+
+
+    document
+      .getElementById("detailArea")
+      .textContent =
+        space.area
+          ? space.area + " ㎡"
+          : "";
+
+
+    document
+      .getElementById("detailPurpose")
+      .textContent =
+        space.purpose || "";
+
+
+    document
+      .getElementById("detailStatus")
+      .textContent =
+        space.status || "";
+
+
+    document
+      .getElementById("detailPhoto")
+      .src =
+        getPhotoUrl(space.photo_path);
+
+  }
+
+
+  // ==============================
+  // QR画像保存
+  // ==============================
+
+  function downloadQR() {
+
+    const canvas =
+      document
+        .querySelector("#qrcode canvas");
+
+
+    if (!canvas) {
+
+      alert("QRコードがありません。");
+      return;
+
+    }
+
+
+    const link =
+      document.createElement("a");
+
+    link.download =
+      "space_qr.png";
+
+    link.href =
+      canvas.toDataURL("image/png");
+
+    link.click();
+
+  }
+
+
+  // ==============================
+  // HTMLエスケープ
+  // ==============================
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  }
+
+
+  // ==============================
+  // QRコードから直接詳細表示
+  // ==============================
+
+  async function loadFromQR() {
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const id =
+      params.get("id");
+
+
+    if (!id) {
+
+      return;
+
+    }
+
+
+    const result =
+      await supabaseClient
+        .from("spaces")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+
+    if (result.error) {
+
+      alert(
+        "スペース情報を取得できませんでした。"
+      );
+
+      return;
+
+    }
+
+
+    showDetail(result.data);
+
+  }
+
+
+  // ==============================
+  // 起動
+  // ==============================
+
+  window.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+      loadFromQR();
+
+    }
+  );
+
+</script>
+
 </body>
 </html>
