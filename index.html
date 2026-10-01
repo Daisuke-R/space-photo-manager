@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -10,27 +11,18 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
+      font-family: sans-serif;
       margin: 0;
-      font-family: Arial, "Noto Sans JP", sans-serif;
-      background: #f5f6f8;
+      background: #f5f5f5;
       color: #333;
     }
 
     header {
-      background: #1f2937;
+      background: #333;
       color: white;
-      padding: 16px;
+      padding: 15px;
       text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 22px;
     }
 
     nav {
@@ -41,36 +33,34 @@
 
     nav button {
       flex: 1;
-      padding: 14px;
+      padding: 15px;
       border: none;
       background: white;
       font-size: 16px;
-      cursor: pointer;
     }
 
     nav button.active {
-      background: #e5e7eb;
+      background: #eee;
       font-weight: bold;
     }
 
     main {
+      padding: 15px;
       max-width: 800px;
-      margin: 0 auto;
-      padding: 16px;
+      margin: auto;
     }
 
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
     }
 
     label {
       display: block;
-      margin-top: 14px;
-      margin-bottom: 6px;
+      margin-top: 15px;
       font-weight: bold;
     }
 
@@ -78,88 +68,106 @@
     select,
     textarea {
       width: 100%;
-      padding: 11px;
+      box-sizing: border-box;
+      padding: 10px;
+      margin-top: 5px;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: 5px;
       font-size: 16px;
     }
 
-    button.primary {
+    button {
+      cursor: pointer;
+    }
+
+    .save-button {
       width: 100%;
-      margin-top: 20px;
+      margin-top: 25px;
       padding: 14px;
       border: none;
-      border-radius: 7px;
-      background: #2563eb;
+      border-radius: 5px;
+      background: #1976d2;
       color: white;
       font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
     }
 
-    button.primary:disabled {
-      background: #9ca3af;
-    }
-
-    .space-item {
-      cursor: pointer;
-    }
-
-    .space-item:hover {
-      background: #f9fafb;
-    }
-
-    .space-item h3 {
-      margin-top: 0;
-      margin-bottom: 8px;
-    }
-
-    .space-photo {
+    .delete-button {
       width: 100%;
-      max-height: 400px;
-      object-fit: contain;
-      background: #eee;
-      border-radius: 8px;
-      margin-top: 10px;
-    }
-
-    .detail-row {
-      margin: 8px 0;
-    }
-
-    .detail-label {
-      font-weight: bold;
-    }
-
-    #qrArea {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    #qrcode {
-      display: inline-block;
-      padding: 10px;
-      background: white;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .message {
-      padding: 12px;
-      border-radius: 6px;
-      margin-top: 12px;
-      background: #eef2ff;
+      margin-top: 15px;
+      padding: 14px;
+      border: none;
+      border-radius: 5px;
+      background: #d32f2f;
+      color: white;
+      font-size: 17px;
     }
 
     .back-button {
-      margin-bottom: 15px;
-      padding: 10px 15px;
-      border: 1px solid #ccc;
+      width: 100%;
+      margin-top: 15px;
+      padding: 12px;
+      border: 1px solid #aaa;
+      border-radius: 5px;
       background: white;
-      border-radius: 6px;
-      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .card img {
+      width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      border-radius: 5px;
+      background: #eee;
+    }
+
+    .detail-photo {
+      width: 100%;
+      max-height: 500px;
+      object-fit: contain;
+      background: #eee;
+      border-radius: 5px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      background: #eee;
+      border-radius: 15px;
+      margin-top: 5px;
+    }
+
+    #qr {
+      margin: 20px auto;
+      width: fit-content;
+    }
+
+    .qr-download {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      background: #555;
+      color: white;
+      font-size: 16px;
+      text-align: center;
+      text-decoration: none;
+      box-sizing: border-box;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      background: #fff3cd;
+      border-radius: 5px;
     }
   </style>
 </head>
@@ -171,161 +179,95 @@
 </header>
 
 <nav>
-  <button id="tabRegister" class="active" onclick="showRegister()">登録</button>
-  <button id="tabList" onclick="showList()">一覧</button>
+  <button id="nav-register" onclick="showScreen('register')">登録</button>
+  <button id="nav-list" onclick="showScreen('list')">一覧</button>
 </nav>
 
 <main>
 
   <!-- 登録画面 -->
-  <section id="registerScreen">
+  <section id="register" class="screen">
 
-    <div class="card">
-      <h2>空きスペース登録</h2>
+    <h2>空きスペース登録</h2>
 
-      <label>写真</label>
-      <input
-        type="file"
-        id="photo"
-        accept="image/*"
-        capture="environment"
-      >
+    <label>写真</label>
+    <input
+      type="file"
+      id="photo"
+      accept="image/*"
+      capture="environment"
+    >
 
-      <label>工場名</label>
-      <input
-        type="text"
-        id="factoryName"
-        placeholder="例：福崎工場"
-      >
+    <label>工場名</label>
+    <input type="text" id="factory_name">
 
-      <label>場所名</label>
-      <input
-        type="text"
-        id="locationName"
-        placeholder="例：7号棟 1階"
-      >
+    <label>場所名</label>
+    <input type="text" id="location_name">
 
-      <label>面積（㎡）</label>
-      <input
-        type="number"
-        id="area"
-        step="0.01"
-        placeholder="例：120"
-      >
+    <label>面積（㎡）</label>
+    <input type="number" id="area" step="0.01">
 
-      <label>用途</label>
-      <input
-        type="text"
-        id="purpose"
-        placeholder="例：倉庫"
-      >
+    <label>用途</label>
+    <input type="text" id="purpose">
 
-      <label>状況</label>
-      <select id="status">
-        <option value="">選択してください</option>
-        <option value="空き">空き</option>
-        <option value="使用予定">使用予定</option>
-        <option value="使用中">使用中</option>
-        <option value="その他">その他</option>
-      </select>
+    <label>状況</label>
+    <select id="status">
+      <option value="">選択してください</option>
+      <option value="空き">空き</option>
+      <option value="使用予定">使用予定</option>
+      <option value="使用中">使用中</option>
+      <option value="その他">その他</option>
+    </select>
 
-      <button
-        class="primary"
-        id="saveButton"
-        onclick="saveSpace()"
-      >
-        保存
-      </button>
+    <button class="save-button" onclick="saveSpace()">保存</button>
 
-      <div id="saveMessage"></div>
-    </div>
-
-    <div class="card hidden" id="qrCard">
-
-      <h2>QRコード</h2>
-
-      <p>
-        このQRコードをA4用紙などに印刷して、
-        対象スペースに掲示してください。
-      </p>
-
-      <div id="qrArea">
-        <div id="qrcode"></div>
-
-        <br>
-
-        <button
-          class="primary"
-          onclick="downloadQR()"
-        >
-          QR画像を保存
-        </button>
-      </div>
-
-    </div>
+    <div id="save-message"></div>
 
   </section>
 
 
   <!-- 一覧画面 -->
-  <section id="listScreen" class="hidden">
+  <section id="list" class="screen">
 
-    <div class="card">
+    <h2>空きスペース一覧</h2>
 
-      <h2>空きスペース一覧</h2>
-
-      <div id="spaceList">
-        読み込み中...
-      </div>
-
+    <div id="space-list">
+      読み込み中...
     </div>
 
   </section>
 
 
   <!-- 詳細画面 -->
-  <section id="detailScreen" class="hidden">
+  <section id="detail" class="screen">
 
-    <button class="back-button" onclick="showList()">
-      ← 一覧に戻る
+    <h2>空きスペース詳細</h2>
+
+    <div id="detail-content"></div>
+
+    <button class="back-button" onclick="showScreen('list')">
+      一覧へ戻る
     </button>
 
-    <div class="card">
+  </section>
 
-      <h2 id="detailTitle">詳細</h2>
 
-      <img
-        id="detailPhoto"
-        class="space-photo"
-        alt="スペース写真"
-      >
+  <!-- QR画面 -->
+  <section id="qr-screen" class="screen">
 
-      <div class="detail-row">
-        <span class="detail-label">工場名：</span>
-        <span id="detailFactory"></span>
-      </div>
+    <h2>QRコード</h2>
 
-      <div class="detail-row">
-        <span class="detail-label">場所名：</span>
-        <span id="detailLocation"></span>
-      </div>
+    <p>このQRコードをA4用紙などに印刷して掲示してください。</p>
 
-      <div class="detail-row">
-        <span class="detail-label">面積：</span>
-        <span id="detailArea"></span>
-      </div>
+    <div id="qr"></div>
 
-      <div class="detail-row">
-        <span class="detail-label">用途：</span>
-        <span id="detailPurpose"></span>
-      </div>
+    <a id="qr-download" class="qr-download" href="#" download="space_qr.png">
+      QRコードを保存
+    </a>
 
-      <div class="detail-row">
-        <span class="detail-label">状況：</span>
-        <span id="detailStatus"></span>
-      </div>
-
-    </div>
+    <button class="back-button" onclick="showScreen('list')">
+      一覧へ戻る
+    </button>
 
   </section>
 
@@ -352,99 +294,46 @@
 
 
   // ==============================
-  // 画面切り替え
+  // 画面切替
   // ==============================
 
-  function hideAllScreens() {
+  function showScreen(screenName) {
 
-    document
-      .getElementById("registerScreen")
-      .classList.add("hidden");
+    document.querySelectorAll(".screen").forEach(screen => {
+      screen.classList.remove("active");
+    });
 
-    document
-      .getElementById("listScreen")
-      .classList.add("hidden");
+    document.getElementById(screenName).classList.add("active");
 
-    document
-      .getElementById("detailScreen")
-      .classList.add("hidden");
+    document.querySelectorAll("nav button").forEach(button => {
+      button.classList.remove("active");
+    });
 
-    document
-      .getElementById("tabRegister")
-      .classList.remove("active");
+    if (screenName === "register") {
+      document.getElementById("nav-register").classList.add("active");
+    }
 
-    document
-      .getElementById("tabList")
-      .classList.remove("active");
-  }
-
-
-  function showRegister() {
-
-    hideAllScreens();
-
-    document
-      .getElementById("registerScreen")
-      .classList.remove("hidden");
-
-    document
-      .getElementById("tabRegister")
-      .classList.add("active");
-  }
-
-
-  async function showList() {
-
-    hideAllScreens();
-
-    document
-      .getElementById("listScreen")
-      .classList.remove("hidden");
-
-    document
-      .getElementById("tabList")
-      .classList.add("active");
-
-    await loadSpaces();
+    if (screenName === "list") {
+      document.getElementById("nav-list").classList.add("active");
+      loadSpaces();
+    }
   }
 
 
   // ==============================
-  // 写真URL取得
-  // ==============================
-
-  function getPhotoUrl(path) {
-
-    const result =
-      supabaseClient
-        .storage
-        .from("space-photos")
-        .getPublicUrl(path);
-
-    return result.data.publicUrl;
-  }
-
-
-  // ==============================
-  // スペース保存
+  // 登録
   // ==============================
 
   async function saveSpace() {
-
-    const button =
-      document.getElementById("saveButton");
-
-    const message =
-      document.getElementById("saveMessage");
 
     const photoFile =
       document.getElementById("photo").files[0];
 
     const factoryName =
-      document.getElementById("factoryName").value.trim();
+      document.getElementById("factory_name").value.trim();
 
     const locationName =
-      document.getElementById("locationName").value.trim();
+      document.getElementById("location_name").value.trim();
 
     const area =
       document.getElementById("area").value;
@@ -455,190 +344,130 @@
     const status =
       document.getElementById("status").value;
 
-
-    if (!photoFile) {
-
-      alert("写真を選択してください。");
-      return;
-
-    }
-
-
-    if (!factoryName || !locationName) {
-
-      alert("工場名と場所名を入力してください。");
-      return;
-
-    }
-
-
-    button.disabled = true;
-    button.textContent = "保存中...";
+    const message =
+      document.getElementById("save-message");
 
     message.innerHTML = "";
 
+    if (!photoFile) {
+      alert("写真を選択してください。");
+      return;
+    }
+
+    if (!factoryName || !locationName) {
+      alert("工場名と場所名を入力してください。");
+      return;
+    }
+
+    if (!status) {
+      alert("状況を選択してください。");
+      return;
+    }
 
     try {
 
-      // ------------------------------
-      // 写真ファイル名作成
-      // ------------------------------
+      message.innerHTML = "保存中...";
 
-      const fileExtension =
-        photoFile.name.split(".").pop();
+      // 写真ファイル名をランダム生成
+      const filePath =
+        crypto.randomUUID() + "_" + photoFile.name;
 
-      const fileName =
-        crypto.randomUUID() +
-        "." +
-        fileExtension;
-
-
-      // ------------------------------
-      // Supabase Storageへアップロード
-      // ------------------------------
-
+      // 写真アップロード
       const uploadResult =
         await supabaseClient
           .storage
           .from("space-photos")
-          .upload(
-            fileName,
-            photoFile,
-            {
-              cacheControl: "3600",
-              upsert: false
-            }
-          );
-
+          .upload(filePath, photoFile);
 
       if (uploadResult.error) {
-
         throw uploadResult.error;
-
       }
 
 
-      // ------------------------------
-      // DBへ登録
-      // ------------------------------
-
+      // DB登録
       const insertResult =
         await supabaseClient
           .from("spaces")
           .insert({
-
             factory_name: factoryName,
-
             location_name: locationName,
-
-            area:
-              area
-                ? Number(area)
-                : null,
-
+            area: area ? Number(area) : null,
             purpose: purpose,
-
             status: status,
-
-            photo_path: fileName
-
+            photo_path: filePath
           })
           .select()
           .single();
 
-
       if (insertResult.error) {
-
         throw insertResult.error;
-
       }
 
-
-      const space =
-        insertResult.data;
+      const space = insertResult.data;
 
 
-      // ------------------------------
-      // QRコード作成
-      // ------------------------------
-
-      const baseUrl =
-        window.location.origin +
-        window.location.pathname;
-
+      // QRコードURL
       const qrUrl =
-        baseUrl +
+        window.location.origin +
+        window.location.pathname +
         "?id=" +
         space.id;
 
 
-      document
-        .getElementById("qrcode")
-        .innerHTML = "";
-
+      // QR生成
+      document.getElementById("qr").innerHTML = "";
 
       new QRCode(
-        document.getElementById("qrcode"),
+        document.getElementById("qr"),
         {
           text: qrUrl,
-          width: 220,
-          height: 220
+          width: 250,
+          height: 250
         }
       );
 
 
-      document
-        .getElementById("qrCard")
-        .classList.remove("hidden");
+      // QRダウンロード
+      setTimeout(() => {
+
+        const canvas =
+          document.querySelector("#qr canvas");
+
+        if (canvas) {
+
+          const download =
+            document.getElementById("qr-download");
+
+          download.href =
+            canvas.toDataURL("image/png");
+
+        }
+
+      }, 500);
 
 
       message.innerHTML =
-        '<div class="message">保存しました。</div>';
+        "保存しました。";
 
+      // 登録画面をクリア
+      document.getElementById("photo").value = "";
+      document.getElementById("factory_name").value = "";
+      document.getElementById("location_name").value = "";
+      document.getElementById("area").value = "";
+      document.getElementById("purpose").value = "";
+      document.getElementById("status").value = "";
 
-      // ------------------------------
-      // フォーム初期化
-      // ------------------------------
-
-      document
-        .getElementById("photo")
-        .value = "";
-
-      document
-        .getElementById("factoryName")
-        .value = "";
-
-      document
-        .getElementById("locationName")
-        .value = "";
-
-      document
-        .getElementById("area")
-        .value = "";
-
-      document
-        .getElementById("purpose")
-        .value = "";
-
-      document
-        .getElementById("status")
-        .value = "";
-
+      showScreen("qr-screen");
 
     } catch (error) {
 
       console.error(error);
 
       message.innerHTML =
-        '<div class="message">保存に失敗しました。<br>' +
-        error.message +
-        '</div>';
+        "保存に失敗しました。<br>" +
+        error.message;
 
     }
-
-
-    button.disabled = false;
-    button.textContent = "保存";
 
   }
 
@@ -650,22 +479,18 @@
   async function loadSpaces() {
 
     const list =
-      document.getElementById("spaceList");
+      document.getElementById("space-list");
 
-    list.innerHTML =
-      "読み込み中...";
+    list.innerHTML = "読み込み中...";
 
 
     const result =
       await supabaseClient
         .from("spaces")
         .select("*")
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
+        .order("created_at", {
+          ascending: false
+        });
 
 
     if (result.error) {
@@ -675,72 +500,75 @@
         result.error.message;
 
       return;
-
     }
 
 
     if (!result.data.length) {
 
       list.innerHTML =
-        "登録されているスペースはありません。";
+        "<p>登録データはありません。</p>";
 
       return;
-
     }
 
 
     list.innerHTML = "";
 
 
-    result.data.forEach(
-      function(space) {
+    result.data.forEach(space => {
 
-        const item =
-          document.createElement("div");
+      const card =
+        document.createElement("div");
 
-        item.className =
-          "card space-item";
+      card.className = "card";
 
+      let photoUrl = "";
 
-        item.innerHTML = `
+      if (space.photo_path) {
 
-          <h3>
-            ${escapeHtml(space.factory_name)}
-            ／
-            ${escapeHtml(space.location_name)}
-          </h3>
+        const urlResult =
+          supabaseClient
+            .storage
+            .from("space-photos")
+            .getPublicUrl(space.photo_path);
 
-          <div>
-            面積：
-            ${space.area ?? ""}
-            ㎡
-          </div>
-
-          <div>
-            用途：
-            ${escapeHtml(space.purpose ?? "")}
-          </div>
-
-          <div>
-            状況：
-            ${escapeHtml(space.status ?? "")}
-          </div>
-
-        `;
-
-
-        item.onclick =
-          function() {
-
-            showDetail(space);
-
-          };
-
-
-        list.appendChild(item);
-
+        photoUrl =
+          urlResult.data.publicUrl;
       }
-    );
+
+
+      card.innerHTML = `
+
+        ${photoUrl
+          ? `<img src="${escapeHtml(photoUrl)}">`
+          : ""
+        }
+
+        <h3>
+          ${escapeHtml(space.factory_name)}
+        </h3>
+
+        <p>
+          ${escapeHtml(space.location_name)}
+        </p>
+
+        <span class="status">
+          ${escapeHtml(space.status || "")}
+        </span>
+
+        <br><br>
+
+        <button
+          class="back-button"
+          onclick="showDetail(${space.id})">
+          詳細を見る
+        </button>
+
+      `;
+
+      list.appendChild(card);
+
+    });
 
   }
 
@@ -749,133 +577,15 @@
   // 詳細表示
   // ==============================
 
-  function showDetail(space) {
+  async function showDetail(id) {
 
-    hideAllScreens();
+    showScreen("detail");
 
+    const content =
+      document.getElementById("detail-content");
 
-    document
-      .getElementById("detailScreen")
-      .classList.remove("hidden");
-
-
-    document
-      .getElementById("detailTitle")
-      .textContent =
-        space.factory_name +
-        " ／ " +
-        space.location_name;
-
-
-    document
-      .getElementById("detailFactory")
-      .textContent =
-        space.factory_name || "";
-
-
-    document
-      .getElementById("detailLocation")
-      .textContent =
-        space.location_name || "";
-
-
-    document
-      .getElementById("detailArea")
-      .textContent =
-        space.area
-          ? space.area + " ㎡"
-          : "";
-
-
-    document
-      .getElementById("detailPurpose")
-      .textContent =
-        space.purpose || "";
-
-
-    document
-      .getElementById("detailStatus")
-      .textContent =
-        space.status || "";
-
-
-    document
-      .getElementById("detailPhoto")
-      .src =
-        getPhotoUrl(space.photo_path);
-
-  }
-
-
-  // ==============================
-  // QR画像保存
-  // ==============================
-
-  function downloadQR() {
-
-    const canvas =
-      document
-        .querySelector("#qrcode canvas");
-
-
-    if (!canvas) {
-
-      alert("QRコードがありません。");
-      return;
-
-    }
-
-
-    const link =
-      document.createElement("a");
-
-    link.download =
-      "space_qr.png";
-
-    link.href =
-      canvas.toDataURL("image/png");
-
-    link.click();
-
-  }
-
-
-  // ==============================
-  // HTMLエスケープ
-  // ==============================
-
-  function escapeHtml(value) {
-
-    return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-
-  }
-
-
-  // ==============================
-  // QRコードから直接詳細表示
-  // ==============================
-
-  async function loadFromQR() {
-
-    const params =
-      new URLSearchParams(
-        window.location.search
-      );
-
-    const id =
-      params.get("id");
-
-
-    if (!id) {
-
-      return;
-
-    }
+    content.innerHTML =
+      "読み込み中...";
 
 
     const result =
@@ -888,34 +598,196 @@
 
     if (result.error) {
 
-      alert(
-        "スペース情報を取得できませんでした。"
-      );
+      content.innerHTML =
+        "読み込みに失敗しました。<br>" +
+        result.error.message;
 
       return;
-
     }
 
 
-    showDetail(result.data);
+    const space = result.data;
+
+
+    let photoUrl = "";
+
+    if (space.photo_path) {
+
+      const urlResult =
+        supabaseClient
+          .storage
+          .from("space-photos")
+          .getPublicUrl(space.photo_path);
+
+      photoUrl =
+        urlResult.data.publicUrl;
+    }
+
+
+    content.innerHTML = `
+
+      ${photoUrl
+        ? `<img
+            class="detail-photo"
+            src="${escapeHtml(photoUrl)}">`
+        : ""
+      }
+
+      <div class="card">
+
+        <h3>
+          ${escapeHtml(space.factory_name)}
+        </h3>
+
+        <p>
+          <strong>場所：</strong>
+          ${escapeHtml(space.location_name)}
+        </p>
+
+        <p>
+          <strong>面積：</strong>
+          ${space.area ?? ""}
+          ㎡
+        </p>
+
+        <p>
+          <strong>用途：</strong>
+          ${escapeHtml(space.purpose || "")}
+        </p>
+
+        <p>
+          <strong>状況：</strong>
+          ${escapeHtml(space.status || "")}
+        </p>
+
+      </div>
+
+      <button
+        class="delete-button"
+        onclick="deleteSpace(${space.id}, '${escapeJs(space.photo_path || "")}')">
+        このスペースを削除
+      </button>
+
+    `;
 
   }
 
 
   // ==============================
-  // 起動
+  // 削除
   // ==============================
 
-  window.addEventListener(
-    "DOMContentLoaded",
-    function() {
+  async function deleteSpace(id, photoPath) {
 
-      loadFromQR();
+    const result =
+      confirm(
+        "このスペースを削除しますか？\n\n" +
+        "登録データと写真の両方が削除されます。"
+      );
+
+    if (!result) {
+      return;
+    }
+
+
+    try {
+
+      // 写真削除
+      if (photoPath) {
+
+        const photoDelete =
+          await supabaseClient
+            .storage
+            .from("space-photos")
+            .remove([photoPath]);
+
+        if (photoDelete.error) {
+          throw photoDelete.error;
+        }
+
+      }
+
+
+      // DB削除
+      const dbDelete =
+        await supabaseClient
+          .from("spaces")
+          .delete()
+          .eq("id", id);
+
+
+      if (dbDelete.error) {
+        throw dbDelete.error;
+      }
+
+
+      alert("削除しました。");
+
+      showScreen("list");
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "削除に失敗しました。\n" +
+        error.message
+      );
 
     }
-  );
+
+  }
+
+
+  // ==============================
+  // HTMLエスケープ
+  // ==============================
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  // JavaScript文字列用
+  function escapeJs(value) {
+
+    return String(value)
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'");
+
+  }
+
+
+  // ==============================
+  // QRから直接詳細表示
+  // ==============================
+
+  const params =
+    new URLSearchParams(window.location.search);
+
+  const spaceId =
+    params.get("id");
+
+
+  if (spaceId) {
+
+    showDetail(spaceId);
+
+  } else {
+
+    showScreen("register");
+
+  }
 
 </script>
 
 </body>
 </html>
+```
