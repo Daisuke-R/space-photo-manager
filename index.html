@@ -25,7 +25,7 @@
     }
 
     nav {
-      display: flex;
+      display: none;
       background: white;
       border-bottom: 1px solid #ddd;
     }
@@ -64,8 +64,7 @@
     }
 
     input,
-    select,
-    textarea {
+    select {
       width: 100%;
       box-sizing: border-box;
       padding: 10px;
@@ -104,6 +103,16 @@
     .back-button {
       width: 100%;
       margin-top: 15px;
+      padding: 12px;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+      background: white;
+      font-size: 16px;
+    }
+
+    .logout-button {
+      width: 100%;
+      margin-top: 25px;
       padding: 12px;
       border: 1px solid #aaa;
       border-radius: 5px;
@@ -168,6 +177,66 @@
       background: #fff3cd;
       border-radius: 5px;
     }
+
+    .error-message {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f8d7da;
+      color: #842029;
+      border-radius: 5px;
+    }
+
+    .login-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      margin-top: 30px;
+    }
+
+    .login-button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 14px;
+      border: none;
+      border-radius: 5px;
+      background: #1976d2;
+      color: white;
+      font-size: 17px;
+    }
+
+    .remember {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: normal;
+    }
+
+    .remember input {
+      width: auto;
+      margin: 0;
+    }
+
+    .admin-info {
+      background: white;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .qr-note {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px 10px;
+    }
   </style>
 </head>
 
@@ -177,56 +246,207 @@
   <h1>空きスペース管理</h1>
 </header>
 
-<nav>
-  <button id="nav-register" onclick="showScreen('register')">登録</button>
-  <button id="nav-list" onclick="showScreen('list')">一覧</button>
+
+<nav id="admin-nav">
+
+  <button
+    id="nav-register"
+    onclick="showScreen('register')">
+    登録
+  </button>
+
+  <button
+    id="nav-list"
+    onclick="showScreen('list')">
+    一覧
+  </button>
+
 </nav>
+
 
 <main>
 
-  <!-- 登録画面 -->
-  <section id="register" class="screen">
+  <!-- ============================== -->
+  <!-- 管理者ログイン -->
+  <!-- ============================== -->
 
-    <h2>空きスペース登録</h2>
+  <section id="login" class="screen">
 
-    <label>写真</label>
-    <input
-      type="file"
-      id="photo"
-      accept="image/*"
-      capture="environment"
-    >
+    <div class="login-box">
 
-    <label>工場名</label>
-    <input type="text" id="factory_name">
+      <h2>管理者ログイン</h2>
 
-    <label>場所名</label>
-    <input type="text" id="location_name">
+      <label>
+        ユーザーID
+      </label>
 
-    <label>面積（㎡）</label>
-    <input type="number" id="area" step="0.01">
+      <input
+        type="text"
+        id="login-user"
+        autocomplete="username"
+        placeholder="ユーザーID">
 
-    <label>用途</label>
-    <input type="text" id="purpose">
 
-    <label>状況</label>
-    <select id="status">
-      <option value="">選択してください</option>
-      <option value="空き">空き</option>
-      <option value="使用予定">使用予定</option>
-      <option value="使用中">使用中</option>
-      <option value="その他">その他</option>
-    </select>
+      <label>
+        パスワード
+      </label>
 
-    <button class="save-button" onclick="saveSpace()">保存</button>
+      <input
+        type="password"
+        id="login-password"
+        autocomplete="current-password"
+        placeholder="パスワード">
 
-    <div id="save-message"></div>
+
+      <label class="remember">
+
+        <input
+          type="checkbox"
+          id="remember-login">
+
+        ログイン情報を記憶する
+
+      </label>
+
+
+      <button
+        class="login-button"
+        onclick="adminLogin()">
+
+        ログイン
+
+      </button>
+
+
+      <div id="login-message"></div>
+
+    </div>
 
   </section>
 
 
+  <!-- ============================== -->
+  <!-- 登録画面 -->
+  <!-- ============================== -->
+
+  <section id="register" class="screen">
+
+    <div class="admin-info">
+      管理者モード
+    </div>
+
+    <h2>空きスペース登録</h2>
+
+
+    <label>
+      写真
+    </label>
+
+    <input
+      type="file"
+      id="photo"
+      accept="image/*"
+      capture="environment">
+
+
+    <label>
+      工場名
+    </label>
+
+    <input
+      type="text"
+      id="factory_name">
+
+
+    <label>
+      場所名
+    </label>
+
+    <input
+      type="text"
+      id="location_name">
+
+
+    <label>
+      面積（㎡）
+    </label>
+
+    <input
+      type="number"
+      id="area"
+      step="0.01">
+
+
+    <label>
+      用途
+    </label>
+
+    <input
+      type="text"
+      id="purpose">
+
+
+    <label>
+      状況
+    </label>
+
+    <select id="status">
+
+      <option value="">
+        選択してください
+      </option>
+
+      <option value="空き">
+        空き
+      </option>
+
+      <option value="使用予定">
+        使用予定
+      </option>
+
+      <option value="使用中">
+        使用中
+      </option>
+
+      <option value="その他">
+        その他
+      </option>
+
+    </select>
+
+
+    <button
+      class="save-button"
+      onclick="saveSpace()">
+
+      保存
+
+    </button>
+
+
+    <div id="save-message"></div>
+
+
+    <button
+      class="logout-button"
+      onclick="adminLogout()">
+
+      ログアウト
+
+    </button>
+
+  </section>
+
+
+  <!-- ============================== -->
   <!-- 一覧画面 -->
+  <!-- ============================== -->
+
   <section id="list" class="screen">
+
+    <div class="admin-info">
+      管理者モード
+    </div>
 
     <h2>空きスペース一覧</h2>
 
@@ -234,39 +454,107 @@
       読み込み中...
     </div>
 
-  </section>
 
+    <button
+      class="logout-button"
+      onclick="adminLogout()">
 
-  <!-- 詳細画面 -->
-  <section id="detail" class="screen">
+      ログアウト
 
-    <h2>空きスペース詳細</h2>
-
-    <div id="detail-content"></div>
-
-    <button class="back-button" onclick="showScreen('list')">
-      一覧へ戻る
     </button>
 
   </section>
 
 
-  <!-- QR画面 -->
+  <!-- ============================== -->
+  <!-- 管理者用詳細画面 -->
+  <!-- ============================== -->
+
+  <section id="detail" class="screen">
+
+    <div class="admin-info">
+      管理者モード
+    </div>
+
+    <h2>空きスペース詳細</h2>
+
+    <div id="detail-content">
+      読み込み中...
+    </div>
+
+
+    <button
+      class="back-button"
+      onclick="showScreen('list')">
+
+      一覧へ戻る
+
+    </button>
+
+  </section>
+
+
+  <!-- ============================== -->
+  <!-- QRコード画面 -->
+  <!-- ============================== -->
+
   <section id="qr-screen" class="screen">
 
     <h2>QRコード</h2>
 
-    <p>このQRコードをA4用紙などに印刷して掲示してください。</p>
+    <div class="qr-note">
+
+      <p>
+        このQRコードをA4用紙などに印刷して掲示してください。
+      </p>
+
+      <p>
+        QRコードを読み取ると、このスペースの情報だけが表示されます。
+      </p>
+
+    </div>
+
 
     <div id="qr"></div>
 
-    <a id="qr-download" class="qr-download" href="#" download="space_qr.png">
+
+    <a
+      id="qr-download"
+      class="qr-download"
+      href="#"
+      download="space_qr.png">
+
       QRコードを保存
+
     </a>
 
-    <button class="back-button" onclick="showScreen('list')">
+
+    <button
+      class="back-button"
+      onclick="showScreen('list')">
+
       一覧へ戻る
+
     </button>
+
+  </section>
+
+
+  <!-- ============================== -->
+  <!-- QRから表示する詳細画面 -->
+  <!-- ============================== -->
+
+  <section id="qr-detail" class="screen">
+
+    <h2>空きスペース情報</h2>
+
+    <div id="qr-detail-content">
+
+      <div class="loading">
+        読み込み中...
+      </div>
+
+    </div>
 
   </section>
 
@@ -275,15 +563,16 @@
 
 <script>
 
-  // ==============================
+  // ==================================================
   // Supabase設定
-  // ==============================
+  // ==================================================
 
   const SUPABASE_URL =
     "https://phjcpmyuccpiaumcxixv.supabase.co";
 
   const SUPABASE_ANON_KEY =
     "sb_publishable_Zrx8JKbBmc0im7KRcDqI6g_QinYgaS7";
+
 
   const supabaseClient =
     supabase.createClient(
@@ -292,36 +581,295 @@
     );
 
 
-  // ==============================
-  // 画面切替
-  // ==============================
+  // ==================================================
+  // Edge Function
+  // ==================================================
 
-  function showScreen(screenName) {
+  const ADMIN_LOGIN_FUNCTION =
+    SUPABASE_URL +
+    "/functions/v1/admin-login";
 
-    document.querySelectorAll(".screen").forEach(screen => {
-      screen.classList.remove("active");
-    });
 
-    document.getElementById(screenName).classList.add("active");
+  // ==================================================
+  // ログイン情報記憶
+  // ==================================================
 
-    document.querySelectorAll("nav button").forEach(button => {
-      button.classList.remove("active");
-    });
+  function loadRememberedLogin() {
 
-    if (screenName === "register") {
-      document.getElementById("nav-register").classList.add("active");
+    const saved =
+      localStorage.getItem("space_admin_login");
+
+    if (!saved) {
+      return;
     }
 
-    if (screenName === "list") {
-      document.getElementById("nav-list").classList.add("active");
-      loadSpaces();
+    try {
+
+      const data =
+        JSON.parse(saved);
+
+      document.getElementById("login-user").value =
+        data.userId || "";
+
+      document.getElementById("login-password").value =
+        data.password || "";
+
+      document.getElementById("remember-login").checked =
+        true;
+
+    } catch (error) {
+
+      console.error(error);
+
     }
+
   }
 
 
-  // ==============================
+  function saveRememberedLogin(userId, password) {
+
+    const remember =
+      document.getElementById("remember-login").checked;
+
+    if (remember) {
+
+      localStorage.setItem(
+        "space_admin_login",
+        JSON.stringify({
+          userId: userId,
+          password: password
+        })
+      );
+
+    } else {
+
+      localStorage.removeItem(
+        "space_admin_login"
+      );
+
+    }
+
+  }
+
+
+  // ==================================================
+  // 管理者ログイン
+  // ==================================================
+
+  async function adminLogin() {
+
+    const userId =
+      document.getElementById("login-user").value.trim();
+
+    const password =
+      document.getElementById("login-password").value;
+
+    const message =
+      document.getElementById("login-message");
+
+
+    message.innerHTML = "";
+
+
+    if (!userId || !password) {
+
+      message.innerHTML =
+        '<div class="error-message">' +
+        'ユーザーIDとパスワードを入力してください。' +
+        '</div>';
+
+      return;
+    }
+
+
+    try {
+
+      message.innerHTML =
+        '<div class="message">ログイン中...</div>';
+
+
+      const response =
+        await fetch(
+          ADMIN_LOGIN_FUNCTION,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              userId: userId,
+              password: password
+            })
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok || !data.success) {
+
+        throw new Error(
+          data.message ||
+          "ログインに失敗しました。"
+        );
+
+      }
+
+
+      // Supabase Authのセッションを設定
+      const sessionResult =
+        await supabaseClient.auth.setSession({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token
+        });
+
+
+      if (sessionResult.error) {
+        throw sessionResult.error;
+      }
+
+
+      // ログイン情報を記憶
+      saveRememberedLogin(
+        userId,
+        password
+      );
+
+
+      message.innerHTML = "";
+
+
+      // 管理者メニューを表示
+      document.getElementById("admin-nav").style.display =
+        "flex";
+
+
+      showScreen("register");
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      message.innerHTML =
+        '<div class="error-message">' +
+        escapeHtml(error.message) +
+        '</div>';
+
+    }
+
+  }
+
+
+  // ==================================================
+  // 管理者ログアウト
+  // ==================================================
+
+  async function adminLogout() {
+
+    await supabaseClient.auth.signOut();
+
+    document.getElementById("admin-nav").style.display =
+      "none";
+
+    showScreen("login");
+
+  }
+
+
+  // ==================================================
+  // 管理者ログイン状態確認
+  // ==================================================
+
+  async function checkAdminSession() {
+
+    const result =
+      await supabaseClient.auth.getSession();
+
+
+    if (
+      result.data &&
+      result.data.session
+    ) {
+
+      document.getElementById("admin-nav").style.display =
+        "flex";
+
+      return true;
+
+    }
+
+
+    return false;
+
+  }
+
+
+  // ==================================================
+  // 画面切替
+  // ==================================================
+
+  function showScreen(screenName) {
+
+    document
+      .querySelectorAll(".screen")
+      .forEach(screen => {
+
+        screen.classList.remove("active");
+
+      });
+
+
+    const target =
+      document.getElementById(screenName);
+
+
+    if (!target) {
+      return;
+    }
+
+
+    target.classList.add("active");
+
+
+    document
+      .querySelectorAll("nav button")
+      .forEach(button => {
+
+        button.classList.remove("active");
+
+      });
+
+
+    if (screenName === "register") {
+
+      document
+        .getElementById("nav-register")
+        .classList.add("active");
+
+    }
+
+
+    if (screenName === "list") {
+
+      document
+        .getElementById("nav-list")
+        .classList.add("active");
+
+      loadSpaces();
+
+    }
+
+  }
+
+
+  // ==================================================
   // 登録
-  // ==============================
+  // ==================================================
 
   async function saveSpace() {
 
@@ -329,68 +877,117 @@
       document.getElementById("photo").files[0];
 
     const factoryName =
-      document.getElementById("factory_name").value.trim();
+      document
+        .getElementById("factory_name")
+        .value
+        .trim();
 
     const locationName =
-      document.getElementById("location_name").value.trim();
+      document
+        .getElementById("location_name")
+        .value
+        .trim();
 
     const area =
-      document.getElementById("area").value;
+      document
+        .getElementById("area")
+        .value;
 
     const purpose =
-      document.getElementById("purpose").value.trim();
+      document
+        .getElementById("purpose")
+        .value
+        .trim();
 
     const status =
-      document.getElementById("status").value;
+      document
+        .getElementById("status")
+        .value;
 
     const message =
       document.getElementById("save-message");
 
+
     message.innerHTML = "";
 
+
     if (!photoFile) {
-      alert("写真を選択してください。");
+
+      alert(
+        "写真を選択してください。"
+      );
+
       return;
     }
 
-    if (!factoryName || !locationName) {
-      alert("工場名と場所名を入力してください。");
+
+    if (
+      !factoryName ||
+      !locationName
+    ) {
+
+      alert(
+        "工場名と場所名を入力してください。"
+      );
+
       return;
     }
+
 
     if (!status) {
-      alert("状況を選択してください。");
+
+      alert(
+        "状況を選択してください。"
+      );
+
       return;
     }
+
 
     try {
 
-      message.innerHTML = "保存中...";
+      message.innerHTML =
+        '<div class="message">保存中...</div>';
 
-      // 写真ファイル名をランダム生成
-      const filePath =
-        crypto.randomUUID() + "_" + photoFile.name;
 
+      // ----------------------------------------------
       // 写真アップロード
+      // ----------------------------------------------
+
+      const filePath =
+        crypto.randomUUID() +
+        "_" +
+        photoFile.name;
+
+
       const uploadResult =
         await supabaseClient
           .storage
           .from("space-photos")
-          .upload(filePath, photoFile);
+          .upload(
+            filePath,
+            photoFile
+          );
+
 
       if (uploadResult.error) {
         throw uploadResult.error;
       }
 
 
+      // ----------------------------------------------
       // DB登録
+      // ----------------------------------------------
+
       const insertResult =
         await supabaseClient
           .from("spaces")
           .insert({
             factory_name: factoryName,
             location_name: locationName,
-            area: area ? Number(area) : null,
+            area: area
+              ? Number(area)
+              : null,
             purpose: purpose,
             status: status,
             photo_path: filePath
@@ -398,23 +995,44 @@
           .select()
           .single();
 
+
       if (insertResult.error) {
+
+        // DB登録に失敗した場合、
+        // アップロード済み写真を削除
+        await supabaseClient
+          .storage
+          .from("space-photos")
+          .remove([filePath]);
+
         throw insertResult.error;
       }
 
-      const space = insertResult.data;
+
+      const space =
+        insertResult.data;
 
 
+      // ----------------------------------------------
       // QRコードURL
+      // ----------------------------------------------
+
       const qrUrl =
         window.location.origin +
         window.location.pathname +
-        "?id=" +
-        space.id;
+        "?token=" +
+        encodeURIComponent(
+          space.qr_token
+        );
 
 
+      // ----------------------------------------------
       // QR生成
-      document.getElementById("qr").innerHTML = "";
+      // ----------------------------------------------
+
+      document.getElementById("qr").innerHTML =
+        "";
+
 
       new QRCode(
         document.getElementById("qr"),
@@ -424,24 +1042,35 @@
           height: 300,
           colorDark: "#000000",
           colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.M
+          correctLevel:
+            QRCode.CorrectLevel.M
         }
       );
 
 
+      // ----------------------------------------------
       // QRダウンロード
+      // ----------------------------------------------
+
       setTimeout(() => {
 
         const canvas =
-          document.querySelector("#qr canvas");
+          document.querySelector(
+            "#qr canvas"
+          );
+
 
         if (canvas) {
 
           const download =
-            document.getElementById("qr-download");
+            document.getElementById(
+              "qr-download"
+            );
 
           download.href =
-            canvas.toDataURL("image/png");
+            canvas.toDataURL(
+              "image/png"
+            );
 
         }
 
@@ -449,57 +1078,93 @@
 
 
       message.innerHTML =
-        "保存しました。";
+        '<div class="message">保存しました。</div>';
 
-      // 登録画面をクリア
-      document.getElementById("photo").value = "";
-      document.getElementById("factory_name").value = "";
-      document.getElementById("location_name").value = "";
-      document.getElementById("area").value = "";
-      document.getElementById("purpose").value = "";
-      document.getElementById("status").value = "";
+
+      // ----------------------------------------------
+      // 入力欄クリア
+      // ----------------------------------------------
+
+      document.getElementById(
+        "photo"
+      ).value = "";
+
+      document.getElementById(
+        "factory_name"
+      ).value = "";
+
+      document.getElementById(
+        "location_name"
+      ).value = "";
+
+      document.getElementById(
+        "area"
+      ).value = "";
+
+      document.getElementById(
+        "purpose"
+      ).value = "";
+
+      document.getElementById(
+        "status"
+      ).value = "";
+
 
       showScreen("qr-screen");
+
 
     } catch (error) {
 
       console.error(error);
 
       message.innerHTML =
+        '<div class="error-message">' +
         "保存に失敗しました。<br>" +
-        error.message;
+        escapeHtml(error.message) +
+        "</div>";
 
     }
 
   }
 
 
-  // ==============================
+  // ==================================================
   // 一覧取得
-  // ==============================
+  // ==================================================
 
   async function loadSpaces() {
 
     const list =
-      document.getElementById("space-list");
+      document.getElementById(
+        "space-list"
+      );
 
-    list.innerHTML = "読み込み中...";
+
+    list.innerHTML =
+      "読み込み中...";
 
 
     const result =
       await supabaseClient
         .from("spaces")
         .select("*")
-        .order("created_at", {
-          ascending: false
-        });
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
 
 
     if (result.error) {
 
       list.innerHTML =
+        '<div class="error-message">' +
         "読み込みに失敗しました。<br>" +
-        result.error.message;
+        escapeHtml(
+          result.error.message
+        ) +
+        "</div>";
 
       return;
     }
@@ -517,74 +1182,104 @@
     list.innerHTML = "";
 
 
-    result.data.forEach(space => {
+    result.data.forEach(
+      space => {
 
-      const card =
-        document.createElement("div");
-
-      card.className = "card";
-
-      let photoUrl = "";
-
-      if (space.photo_path) {
-
-        const urlResult =
-          supabaseClient
-            .storage
-            .from("space-photos")
-            .getPublicUrl(space.photo_path);
-
-        photoUrl =
-          urlResult.data.publicUrl;
-      }
+        const card =
+          document.createElement(
+            "div"
+          );
 
 
-      card.innerHTML = `
+        card.className =
+          "card";
 
-        ${photoUrl
-          ? `<img src="${escapeHtml(photoUrl)}">`
-          : ""
+
+        let photoUrl = "";
+
+
+        if (space.photo_path) {
+
+          const urlResult =
+            supabaseClient
+              .storage
+              .from("space-photos")
+              .getPublicUrl(
+                space.photo_path
+              );
+
+
+          photoUrl =
+            urlResult.data.publicUrl;
+
         }
 
-        <h3>
-          ${escapeHtml(space.factory_name)}
-        </h3>
 
-        <p>
-          ${escapeHtml(space.location_name)}
-        </p>
+        card.innerHTML = `
 
-        <span class="status">
-          ${escapeHtml(space.status || "")}
-        </span>
+          ${
+            photoUrl
+              ? `
+                <img
+                  src="${escapeHtml(photoUrl)}"
+                  alt="空きスペース写真">
+              `
+              : ""
+          }
 
-        <br><br>
+          <h3>
+            ${escapeHtml(
+              space.factory_name
+            )}
+          </h3>
 
-        <button
-          class="back-button"
-          onclick="showDetail(${space.id})">
-          詳細を見る
-        </button>
+          <p>
+            ${escapeHtml(
+              space.location_name
+            )}
+          </p>
 
-      `;
+          <span class="status">
+            ${escapeHtml(
+              space.status || ""
+            )}
+          </span>
 
-      list.appendChild(card);
+          <br><br>
 
-    });
+          <button
+            class="back-button"
+            onclick="showDetail(${space.id})">
+
+            詳細を見る
+
+          </button>
+
+        `;
+
+
+        list.appendChild(card);
+
+      }
+    );
 
   }
 
 
-  // ==============================
-  // 詳細表示
-  // ==============================
+  // ==================================================
+  // 管理者用詳細表示
+  // ==================================================
 
   async function showDetail(id) {
 
     showScreen("detail");
 
+
     const content =
-      document.getElementById("detail-content");
+      document.getElementById(
+        "detail-content"
+      );
+
 
     content.innerHTML =
       "読み込み中...";
@@ -601,17 +1296,23 @@
     if (result.error) {
 
       content.innerHTML =
+        '<div class="error-message">' +
         "読み込みに失敗しました。<br>" +
-        result.error.message;
+        escapeHtml(
+          result.error.message
+        ) +
+        "</div>";
 
       return;
     }
 
 
-    const space = result.data;
+    const space =
+      result.data;
 
 
     let photoUrl = "";
+
 
     if (space.photo_path) {
 
@@ -619,31 +1320,43 @@
         supabaseClient
           .storage
           .from("space-photos")
-          .getPublicUrl(space.photo_path);
+          .getPublicUrl(
+            space.photo_path
+          );
+
 
       photoUrl =
         urlResult.data.publicUrl;
+
     }
 
 
     content.innerHTML = `
 
-      ${photoUrl
-        ? `<img
-            class="detail-photo"
-            src="${escapeHtml(photoUrl)}">`
-        : ""
+      ${
+        photoUrl
+          ? `
+            <img
+              class="detail-photo"
+              src="${escapeHtml(photoUrl)}"
+              alt="空きスペース写真">
+          `
+          : ""
       }
 
       <div class="card">
 
         <h3>
-          ${escapeHtml(space.factory_name)}
+          ${escapeHtml(
+            space.factory_name
+          )}
         </h3>
 
         <p>
           <strong>場所：</strong>
-          ${escapeHtml(space.location_name)}
+          ${escapeHtml(
+            space.location_name
+          )}
         </p>
 
         <p>
@@ -654,20 +1367,31 @@
 
         <p>
           <strong>用途：</strong>
-          ${escapeHtml(space.purpose || "")}
+          ${escapeHtml(
+            space.purpose || ""
+          )}
         </p>
 
         <p>
           <strong>状況：</strong>
-          ${escapeHtml(space.status || "")}
+          ${escapeHtml(
+            space.status || ""
+          )}
         </p>
 
       </div>
 
       <button
         class="delete-button"
-        onclick="deleteSpace(${space.id}, '${escapeJs(space.photo_path || "")}')">
+        onclick="deleteSpace(
+          ${space.id},
+          '${escapeJs(
+            space.photo_path || ""
+          )}'
+        )">
+
         このスペースを削除
+
       </button>
 
     `;
@@ -675,17 +1399,21 @@
   }
 
 
-  // ==============================
+  // ==================================================
   // 削除
-  // ==============================
+  // ==================================================
 
-  async function deleteSpace(id, photoPath) {
+  async function deleteSpace(
+    id,
+    photoPath
+  ) {
 
     const result =
       confirm(
         "このスペースを削除しますか？\n\n" +
         "登録データと写真の両方が削除されます。"
       );
+
 
     if (!result) {
       return;
@@ -694,14 +1422,20 @@
 
     try {
 
+      // ----------------------------------------------
       // 写真削除
+      // ----------------------------------------------
+
       if (photoPath) {
 
         const photoDelete =
           await supabaseClient
             .storage
             .from("space-photos")
-            .remove([photoPath]);
+            .remove([
+              photoPath
+            ]);
+
 
         if (photoDelete.error) {
           throw photoDelete.error;
@@ -710,12 +1444,18 @@
       }
 
 
+      // ----------------------------------------------
       // DB削除
+      // ----------------------------------------------
+
       const dbDelete =
         await supabaseClient
           .from("spaces")
           .delete()
-          .eq("id", id);
+          .eq(
+            "id",
+            id
+          );
 
 
       if (dbDelete.error) {
@@ -723,13 +1463,20 @@
       }
 
 
-      alert("削除しました。");
+      alert(
+        "削除しました。"
+      );
 
-      showScreen("list");
+
+      showScreen(
+        "list"
+      );
+
 
     } catch (error) {
 
       console.error(error);
+
 
       alert(
         "削除に失敗しました。\n" +
@@ -741,52 +1488,299 @@
   }
 
 
-  // ==============================
+  // ==================================================
+  // QRコードから1件だけ表示
+  // ==================================================
+
+  async function showQrDetail(
+    token
+  ) {
+
+    // 管理者メニューを非表示
+    document.getElementById(
+      "admin-nav"
+    ).style.display =
+      "none";
+
+
+    showScreen(
+      "qr-detail"
+    );
+
+
+    const content =
+      document.getElementById(
+        "qr-detail-content"
+      );
+
+
+    content.innerHTML =
+      '<div class="loading">読み込み中...</div>';
+
+
+    try {
+
+      // RPCでQRトークンに一致する1件だけ取得
+      const result =
+        await supabaseClient
+          .rpc(
+            "get_space_by_qr_token",
+            {
+              token: token
+            }
+          );
+
+
+      if (result.error) {
+        throw result.error;
+      }
+
+
+      if (
+        !result.data ||
+        result.data.length === 0
+      ) {
+
+        content.innerHTML =
+          '<div class="error-message">' +
+          "このQRコードの情報は見つかりませんでした。" +
+          "</div>";
+
+        return;
+      }
+
+
+      const space =
+        result.data[0];
+
+
+      let photoUrl = "";
+
+
+      if (space.photo_path) {
+
+        const urlResult =
+          supabaseClient
+            .storage
+            .from("space-photos")
+            .getPublicUrl(
+              space.photo_path
+            );
+
+
+        photoUrl =
+          urlResult.data.publicUrl;
+
+      }
+
+
+      content.innerHTML = `
+
+        ${
+          photoUrl
+            ? `
+              <img
+                class="detail-photo"
+                src="${escapeHtml(photoUrl)}"
+                alt="空きスペース写真">
+            `
+            : ""
+        }
+
+        <div class="card">
+
+          <h3>
+            ${escapeHtml(
+              space.factory_name
+            )}
+          </h3>
+
+          <p>
+            <strong>場所：</strong>
+            ${escapeHtml(
+              space.location_name
+            )}
+          </p>
+
+          <p>
+            <strong>面積：</strong>
+            ${space.area ?? ""}
+            ㎡
+          </p>
+
+          <p>
+            <strong>用途：</strong>
+            ${escapeHtml(
+              space.purpose || ""
+            )}
+          </p>
+
+          <p>
+            <strong>状況：</strong>
+            <span class="status">
+              ${escapeHtml(
+                space.status || ""
+              )}
+            </span>
+          </p>
+
+        </div>
+
+      `;
+
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      content.innerHTML =
+        '<div class="error-message">' +
+        "読み込みに失敗しました。<br>" +
+        escapeHtml(
+          error.message
+        ) +
+        "</div>";
+
+    }
+
+  }
+
+
+  // ==================================================
   // HTMLエスケープ
-  // ==============================
+  // ==================================================
 
-  function escapeHtml(value) {
-
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-
-  }
-
-
-  // JavaScript文字列用
-  function escapeJs(value) {
+  function escapeHtml(
+    value
+  ) {
 
     return String(value)
-      .replace(/\\/g, "\\\\")
-      .replace(/'/g, "\\'");
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#039;"
+      );
 
   }
 
 
-  // ==============================
-  // QRから直接詳細表示
-  // ==============================
+  // ==================================================
+  // JavaScript文字列用エスケープ
+  // ==================================================
 
-  const params =
-    new URLSearchParams(window.location.search);
+  function escapeJs(
+    value
+  ) {
 
-  const spaceId =
-    params.get("id");
-
-
-  if (spaceId) {
-
-    showDetail(spaceId);
-
-  } else {
-
-    showScreen("register");
+    return String(value)
+      .replace(
+        /\\/g,
+        "\\\\"
+      )
+      .replace(
+        /'/g,
+        "\\'"
+      );
 
   }
+
+
+  // ==================================================
+  // 初期処理
+  // ==================================================
+
+  async function initialize() {
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    // ----------------------------------------------
+    // QRコードからアクセスした場合
+    // ----------------------------------------------
+
+    const token =
+      params.get(
+        "token"
+      );
+
+
+    if (token) {
+
+      await showQrDetail(
+        token
+      );
+
+      return;
+
+    }
+
+
+    // ----------------------------------------------
+    // 管理者セッション確認
+    // ----------------------------------------------
+
+    const isAdmin =
+      await checkAdminSession();
+
+
+    if (isAdmin) {
+
+      document.getElementById(
+        "admin-nav"
+      ).style.display =
+        "flex";
+
+
+      showScreen(
+        "register"
+      );
+
+
+      return;
+
+    }
+
+
+    // ----------------------------------------------
+    // ログイン画面
+    // ----------------------------------------------
+
+    document.getElementById(
+      "admin-nav"
+    ).style.display =
+      "none";
+
+
+    loadRememberedLogin();
+
+
+    showScreen(
+      "login"
+    );
+
+  }
+
+
+  initialize();
 
 </script>
 
