@@ -515,6 +515,8 @@
     </div>
 
 
+    <p id="qr-space-label"></p>
+
     <div id="qr"></div>
 
 
@@ -1033,6 +1035,11 @@
       document.getElementById("qr").innerHTML =
         "";
 
+      const qrLabel = document.getElementById("qr-space-label");
+      if (qrLabel) {
+        qrLabel.textContent = `${factoryName} ${locationName} のQRコード`;
+      }
+
 
       new QRCode(
         document.getElementById("qr"),
@@ -1382,6 +1389,14 @@
       </div>
 
       <button
+        class="save-button"
+        onclick="showExistingQr(${space.id})">
+
+        QRコードを再表示・保存
+
+      </button>
+
+      <button
         class="delete-button"
         onclick="deleteSpace(
           ${space.id},
@@ -1395,6 +1410,78 @@
       </button>
 
     `;
+
+  }
+
+
+  // ==================================================
+  // 登録済みQRコードの再表示・保存
+  // ==================================================
+
+  async function showExistingQr(id) {
+
+    const content = document.getElementById("detail-content");
+
+    try {
+
+      const result = await supabaseClient
+        .from("spaces")
+        .select("id, qr_token, factory_name, location_name")
+        .eq("id", id)
+        .single();
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      const space = result.data;
+
+      if (!space.qr_token) {
+        throw new Error("このスペースにはQRコード情報がありません。");
+      }
+
+      const qrUrl =
+        window.location.origin +
+        window.location.pathname +
+        "?token=" +
+        encodeURIComponent(space.qr_token);
+
+      document.getElementById("qr").innerHTML = "";
+
+      new QRCode(
+        document.getElementById("qr"),
+        {
+          text: qrUrl,
+          width: 300,
+          height: 300,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
+        }
+      );
+
+      const download = document.getElementById("qr-download");
+      download.href = "#";
+      download.download = `space_qr_${space.id}.png`;
+
+      const label = document.getElementById("qr-space-label");
+      if (label) {
+        label.textContent = `${space.factory_name || ""} ${space.location_name || ""} のQRコード`;
+      }
+
+      showScreen("qr-screen");
+
+      setTimeout(() => {
+        const canvas = document.querySelector("#qr canvas");
+        if (canvas) {
+          download.href = canvas.toDataURL("image/png");
+        }
+      }, 500);
+
+    } catch (error) {
+      console.error(error);
+      alert("QRコードの表示に失敗しました。\n" + error.message);
+    }
 
   }
 
