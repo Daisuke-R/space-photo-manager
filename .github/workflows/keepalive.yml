@@ -1,0 +1,35 @@
+name: Supabase Keepalive
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+
+          response_code=$(curl --silent --show-error \
+            --output /tmp/response.txt \
+            --write-out "%{http_code}" \
+            --get "${SUPABASE_URL%/}/rest/v1/spaces" \
+            --data-urlencode "select=id" \
+            --data-urlencode "limit=1" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+
+          echo "Supabase REST HTTP status: ${response_code}"
+
+          if [ "${response_code}" -lt 200 ] || [ "${response_code}" -ge 300 ]; then
+            cat /tmp/response.txt
+            exit 1
+          fi
+
+          echo "Supabase REST request completed successfully."
